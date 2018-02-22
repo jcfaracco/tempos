@@ -29,6 +29,7 @@
 #include <tempos/delay.h>
 #include <tempos/sched.h>
 #include <tempos/wait.h>
+#include <x86/kgdb.h>
 #include <drv/i8042.h>
 #include <drv/ata_generic.h>
 #include <fs/vfs.h>
@@ -95,7 +96,7 @@ void thread1(void *arg)
  */
 void kernel_main_thread(void *arg)
 {
-	char rdev_str[10], *rstr, *init;
+	char rdev_str[10], *rstr, *init, *kgdbwait;
 	dev_t rootdev;
 	size_t i, rdev_len;
 	
@@ -144,6 +145,13 @@ void kernel_main_thread(void *arg)
 		init = DEFAULT_INIT_PROCCESS;
 	}
 	kprintf("Loading %s...\n", init);
+
+        /* Load init */
+        kgdbwait = cmdline_get_value("kgdbwait");
+	kprintf("%s\n", kgdbwait);
+        if (kgdbwait) {
+		kgdb_initial_breakpoint();
+	}
 
 	/* Load init */
 	vfs_inode *arq = vfs_namei(init);

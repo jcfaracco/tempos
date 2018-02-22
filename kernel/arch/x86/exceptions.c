@@ -36,6 +36,7 @@ void ex_div(pt_regs regs)
 
 void ex_debug()
 {
+        gdb_exception_enter();
 	kprintf("EXCEP: DEBUG\n");
 }
 
